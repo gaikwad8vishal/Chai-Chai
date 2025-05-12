@@ -1,0 +1,304 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 220.9 39.3% 11%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 224 71.4% 4.1%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem
+  }
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 220.9 39.3% 11%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 216 12.2% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+
+  }
+}
+
+
+
+
+/* Blurred blob shapes */
+.blob {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+  filter: blur(80px);
+  border-radius: 50%;
+}
+
+.blob1 {
+  width: 300px;
+  height: 300px;
+  top: 50px;
+  left: 50px;
+}
+
+.blob2 {
+  width: 400px;
+  height: 400px;
+  bottom: 50px;
+  right: 50px;
+}
+
+.blob3 {
+  width: 250px;
+  height: 250px;
+  top: 150px;
+  right: 200px;
+}
+
+
+.button1 {
+  background: white;
+  color: black;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.button1:hover {
+  transform: scale(1.05);
+}
+
+
+/* navbar.css */
+.body1 {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: transparent; /* Background color similar to reference */
+
+}
+
+/* body.css */
+.body1 {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #c4a27a, #815f4b);
+  overflow: hidden;
+  position: relative;
+}
+
+
+.signbody{
+   
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #d1dbc2; /* Light greenish background */
+    color: #333;
+    overflow: hidden;
+    position: relative;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60py;
+  background: rgba(255, 255, 255, 0.1); /* White with 10% opacity */
+  backdrop-filter: blur(10px); /* Frosted glass effect */
+  border-radius: 40px;
+  max-width: 90%;
+  transition: all 0.3s ease-in-out; /* Smooth effect */
+}
+
+
+/* Logo */
+.navbar .logo {
+  margin-left: 8px;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  word-spacing: 0.2em;
+}
+
+/* Navigation Links */
+.navbar .nav-links {
+  display: flex;
+  gap: 20px
+}
+
+.navbar .nav-links a {
+  text-decoration: none;
+  font-size: 16px;
+  padding: 10px 15px;
+  border-radius: 20px;
+  transition: 0.3s;
+}
+
+.navbar .nav-links a:hover,
+.navbar .nav-links a.active {
+  background: white;
+  color: black;
+}
+
+/* signin & Signup */
+.navbar .auth-buttons {
+  gap: 15px;
+}
+
+.navbar .auth-buttons button {
+  background: white;
+  color: black;
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.navbar .auth-buttons .button1:hover {
+  transform: scale(1.05);
+}
+
+
+.userdashbody{
+
+  font-family: Arial, sans-serif;
+  overflow: scroll;
+  overscroll-behavior: none;
+  height: 100%;
+
+
+  
+}
+
+.adminbody {
+  margin: 0;
+  padding: 0;
+  margin-top: 0px;
+  overflow: scroll;
+  position: relative;
+}
+
+
+.bodyadmin {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #dad8e7;
+  overflow: hidden;
+  position: relative;
+}
+
+.container1 {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Background Blur Shapes */
+.bodyadmin::before,
+.bodyadmin::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.5);
+  filter: blur(80px);
+  border-radius: 50%;
+}
+
+.bodyadmin::before {
+  top: 10%;
+  left: 10%;
+}
+
+.bodyadmin::after {
+  bottom: 10%;
+  right: 10%;
+}
+
+
+
+
+.Button3 {
+  background: white;
+  color: black;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 1px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  clip-path: inset(-45px);
+  box-shadow: -60px 15px,-60px 15px,-60px 15px;
+  transform: translateY(-15px);
+  animation: l19 1s infinite linear;
+}
+@keyframes l19{ 
+  16.67% {box-shadow:-60px 15px,-60px 15px,19px 15px}
+  33.33% {box-shadow:-60px 15px,  0px 15px,19px 15px}
+  40%,60%{box-shadow:-19px 15px,  0px 15px,19px 15px}
+  66.67% {box-shadow:-19px 15px,  0px 15px,60px 15px}
+  83.33% {box-shadow:-19px 15px, 60px 15px,60px 15px}
+  100%   {box-shadow: 60px 15px, 60px 15px,60px 15px}
+}
