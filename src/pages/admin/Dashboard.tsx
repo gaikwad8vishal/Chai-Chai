@@ -16,7 +16,7 @@ interface Analytics {
   totalUsers: number;
   totalOrders: number;
   revenue: number;
-  pendingOrders: number;
+  pendingOrders: number;  
 }
 
 // Mock API URL (replace with actual backend URL)
