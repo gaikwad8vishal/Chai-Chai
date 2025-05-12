@@ -1,295 +1,296 @@
-import { useEffect, useState } from "react";
-import { getOrderStats, getAllUsers, getAllOrders, getCustomerOrders } from "../../api/admin";
-import { Card, CardContent, CardTitle } from "../../components/ui/card";
-import { Users, Package, DollarSign } from "lucide-react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from "recharts";
-import Navbar from "../../components/Navbar";
+import { useState, useEffect } from "react";
+import { FaUsers, FaBoxOpen, FaChartLine, FaExclamationTriangle } from "react-icons/fa";
+import { motion } from "framer-motion";
+import axios from "axios";
 
-
-// Define Types
-interface OrderItem {
-  id: string;
-  name: string;
-  quantity: number;
-  price: number;
-}
 
 interface Order {
-  id: string;
-  status: string;
-  items: OrderItem[];
-  productName?: string; // Computed in frontend
+  id: number;
+  customerName: string;
+  date: string;
+  status: "Pending" | "Shipped" | "Delivered" | "Cancelled";
+  total: number;
 }
 
-interface User {
-  id: string;
-  username: string;
-  role: "USER" | "ADMIN" | "DELIVERY_PERSON";
-}
-
-interface Stats {
-  totalOrders: number;
+interface Analytics {
   totalUsers: number;
+  totalOrders: number;
+  revenue: number;
   pendingOrders: number;
-  deliveredOrders: number;
-  cancelledOrders: number;
-  totalRevenue: number;
-  popularProducts: { name: string; quantity: number }[];
-  groupedData: { [key: string]: { orders: number; revenue: number } };
 }
+
+// Mock API URL (replace with actual backend URL)
+const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 const Dashboard = () => {
-  const [stats, setStats] = useState<Stats>({
-    totalOrders: 0,
-    totalUsers: 0,
-    pendingOrders: 0,
-    deliveredOrders: 0,
-    cancelledOrders: 0,
-    totalRevenue: 0,
-    popularProducts: [],
-    groupedData: {},
-  });
+  // State declarations
   const [orders, setOrders] = useState<Order[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"recent" | "customer">("recent");
-  const [loading, setLoading] = useState<boolean>(true);
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
+  // Removed unused 'users' state
+  // const [users, setUsers] = useState<User[]>([]);
+
+  // Removed unused 'setViewMode' by not destructuring it
+  const [viewMode] = useState<"recent" | "customer">("recent");
+
+  // Fetch data on component mount
   useEffect(() => {
-    const fetchStats = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
 
       try {
-        const [orderStats, fetchedUsers, allOrders] = await Promise.all([
-          getOrderStats(),
-          getAllUsers(),
-          getAllOrders(),
-        ]);
+        // Fetch orders
+        const ordersResponse = await axios.get(`${backendURL}/orders`);
+        setOrders(ordersResponse.data);
 
-        // Filter users to only include USER role
-        const filteredUsers = fetchedUsers.filter((user: User) => user.role === "USER");
+        // Fetch analytics
+        const analyticsResponse = await axios.get(`${backendURL}/analytics`);
+        setAnalytics(analyticsResponse.data);
 
-        const mappedRecentOrders = allOrders.slice(0, 5).map((order: Order) => ({
-          ...order,
-          productName: order.items && order.items.length > 0 ? order.items[0].name : "Unknown Product",
-        }));
-
-        setStats({
-          totalOrders: orderStats.totalOrders || 100,
-          totalUsers: filteredUsers.length || 0,
-          pendingOrders: orderStats.pendingOrders || orderStats.pending || 0,
-          deliveredOrders: orderStats.deliveredOrders || orderStats.delivered || 0,
-          cancelledOrders: orderStats.cancelledOrders || orderStats.cancelled || 0,
-          totalRevenue: orderStats.totalRevenue || 0,
-          popularProducts: orderStats.popularProducts || [],
-          groupedData: orderStats.groupedData || {},
-        });
-        setUsers(filteredUsers);
-        setOrders(mappedRecentOrders);
-        setSelectedUserId(filteredUsers[0]?.id || null);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        // Note: Removed fetching users since 'users' state is unused
+      } catch (err) {
+        setError("Failed to fetch data. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    const fetchCustomerOrders = async () => {
-      if (!selectedUserId || viewMode !== "customer") return;
+  // Handler to open order details modal
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
 
-      setLoading(true);
-      try {
-        const customerOrdersData = await getCustomerOrders(selectedUserId);
-        const mappedCustomerOrders = customerOrdersData.orders.slice(0, 5).map((order: Order) => ({
-          ...order,
-          productName: order.items && order.items.length > 0 ? order.items[0].name : "Unknown Product",
-        }));
-        setOrders(mappedCustomerOrders);
-      } catch (error) {
-        console.error("Error fetching customer orders:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Handler to close modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
+  };
 
-    fetchCustomerOrders();
-  }, [selectedUserId, viewMode]);
+  // Handler to update order status
+  const handleUpdateStatus = async (orderId: number, newStatus: Order["status"]) => {
+    try {
+      await axios.patch(`${backendURL}/orders/${orderId}`, { status: newStatus });
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId ? { ...order, status: newStatus } : order
+        )
+      );
+      handleCloseModal();
+    } catch (err) {
+      setError("Failed to update order status.");
+    }
+  };
 
-  const orderChartData = [
-    { name: "Pending", value: stats.pendingOrders },
-    { name: "Delivered", value: stats.deliveredOrders },
-    { name: "Cancelled", value: stats.cancelledOrders },
-  ];
-  const COLORS = ["#FFBB28", "#00C49F", "#FF8042"];
+  // Render loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-400"></div>
+      </div>
+    );
+  }
 
-  const timePeriodChartData = Object.entries(stats.groupedData).map(([key, value]) => ({
-    name: key,
-    orders: value.orders,
-  }));
+  // Render error state
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-red-500 flex items-center gap-2">
+          <FaExclamationTriangle className="text-2xl" />
+          <span>{error}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="adminbody min-h-screen flex flex-col">
-      <Navbar />
-      <div className="flex flex-grow">
-        <main className="flex-1 p-6 mx-4 mt-12 rounded-xl bg-white/20 dark:bg-gray-900">
-          <h1 className="text-3xl font-bold mb-6 text-white">Admin Dashboard</h1>
-
-          {/* Cards Section */}
-          <div className="grid md:grid-cols-4 gap-6">
-            {loading ? (
-              <>
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-white/20 animate-pulse rounded-xl w-full h-20"
-                  />
-                ))}
-              </>
-            ) : (
-              <>
-                <Card className="bg-white/20 rounded-xl dark:bg-gray-800 flex items-center p-4">
-                  <Package className="text-green-500" size={40} aria-hidden="true" />
-                  <CardContent className="ml-4">
-                    <CardTitle>Total Orders</CardTitle>
-                    <p className="text-2xl font-bold">{stats.totalOrders}</p>
-                  </CardContent>
-                </Card>
-                <Card className="bg-white/20 rounded-xl dark:bg-gray-800 flex items-center p-4">
-                  <Users className="text-blue-500" size={40} aria-hidden="true" />
-                  <CardContent className="ml-4">
-                    <CardTitle>Total Users</CardTitle>
-                    <p className="text-2xl font-bold">{stats.totalUsers}</p>
-                  </CardContent>
-                </Card>
-                <Card className="bg-white/20 rounded-xl dark:bg-gray-800 flex items-center p-4">
-                  <Package className="text-orange-500" size={40} aria-hidden="true" />
-                  <CardContent className="ml-4">
-                    <CardTitle>Pending Orders</CardTitle>
-                    <p className="text-2xl font-bold">{stats.pendingOrders}</p>
-                  </CardContent>
-                </Card>
-                <Card className="bg-white/20 rounded-xl dark:bg-gray-800 flex items-center p-4">
-                  <DollarSign className="text-yellow-500" size={40} aria-hidden="true" />
-                  <CardContent className="ml-4">
-                    <CardTitle>Total Revenue</CardTitle>
-                    <p className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</p>
-                  </CardContent>
-                </Card>
-              </>
-            )}
-          </div>
-
-          {/* Charts Section */}
-          <div className="mt-8 grid md:grid-cols-2 gap-6">
-            <div className="bg-white/20 dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h2 className="text-xl font-semibold mb-4 text-white">Order Status</h2>
-              {loading ? (
-                <div className="animate-pulse bg-white/20 h-[200px] rounded-lg" />
-              ) : (
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie
-                      data={orderChartData}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      label
-                    >
-                      {orderChartData.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-            <div className="bg-white/20 dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h2 className="text-xl font-semibold mb-4 text-white">Orders by Period</h2>
-              {loading ? (
-                <div className="animate-pulse bg-white/20 h-[200px] rounded-lg" />
-              ) : (
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={timePeriodChartData}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="orders" fill="#82ca9d" barSize={30} />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </div>
-
-          {/* Orders Section */}
-          <div className="mt-8">
-            <div className="bg-white/20 dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl  p-2 rounded font-semibold text-gray-700">
-                  Recent Orders...
-                </h2>
-              </div>
-              {loading ? (
-                <div className="animate-pulse bg-white/20 h-[120px] rounded-lg" />
-              ) : (
-                <ul role="list">
-                  {orders.length === 0 ? (
-                    <li className="text-gray-500">
-                      {viewMode === "recent"
-                        ? "No recent orders available."
-                        : selectedUserId
-                        ? "No orders for this customer."
-                        : "Please select a customer."}
-                    </li>
-                  ) : (
-                    orders.map((order) => (
-                      <li
-                        key={order.id}
-                        className="border-b py-2 flex justify-between text-gray-800"
-                        role="listitem"
-                      >
-                        <span>Order: {order.productName}</span>
-                        <span
-                          className={`font-semibold ${
-                            order.status === "PENDING"
-                              ? "text-orange-500"
-                              : order.status === "DELIVERED"
-                              ? "text-green-500"
-                              : "text-red-500"
-                          }`}
-                        >
-                          {order.status}
-                        </span>
-                      </li>
-                    ))
-                  )}
-                </ul>
-              )}
-            </div>
-          </div>
-        </main>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="p-6 bg-gray-100 dark:bg-gray-900 min-h-screen"
+    >
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+          Admin Dashboard
+        </h1>
+        <p className="text-gray-600 dark:text-gray-300">
+          Overview of Chai-Chai operations
+        </p>
       </div>
-      <AdminFooter />
-    </div>
+
+      {/* Analytics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="flex items-center gap-4">
+            <FaUsers className="text-3xl text-yellow-400" />
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                Total Users
+              </h3>
+              <p className="text-2xl font-bold text-gray-600 dark:text-gray-300">
+                {analytics?.totalUsers || 0}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="flex items-center gap-4">
+            <FaBoxOpen className="text-3xl text-yellow-400" />
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                Total Orders
+              </h3>
+              <p className="text-2xl font-bold text-gray-600 dark:text-gray-300">
+                {analytics?.totalOrders || 0}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="flex items-center gap-4">
+            <FaChartLine className="text-3xl text-yellow-400" />
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                Revenue
+              </h3>
+              <p className="text-2xl font-bold text-gray-600 dark:text-gray-300">
+                ₹{analytics?.revenue || 0}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="flex items-center gap-4">
+            <FaExclamationTriangle className="text-3xl text-yellow-400" />
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                Pending Orders
+              </h3>
+              <p className="text-2xl font-bold text-gray-600 dark:text-gray-300">
+                {analytics?.pendingOrders || 0}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Orders Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
+          {viewMode === "recent" ? "Recent Orders" : "Customer Orders"}
+        </h2>
+        <table className="w-full text-left">
+          <thead>
+            <tr className="border-b dark:border-gray-700">
+              <th className="py-3 px-4 text-gray-800 dark:text-white">Order ID</th>
+              <th className="py-3 px-4 text-gray-800 dark:text-white">Customer</th>
+              <th className="py-3 px-4 text-gray-800 dark:text-white">Date</th>
+              <th className="py-3 px-4 text-gray-800 dark:text-white">Status</th>
+              <th className="py-3 px-4 text-gray-800 dark:text-white">Total</th>
+              <th className="py-3 px-4 text-gray-800 dark:text-white">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((order) => (
+              <tr key={order.id} className="border-b dark:border-gray-700">
+                <td className="py-3 px-4 text-gray-600 dark:text-gray-300">{order.id}</td>
+                <td className="py-3 px-4 text-gray-600 dark:text-gray-300">{order.customerName}</td>
+                <td className="py-3 px-4 text-gray-600 dark:text-gray-300">{order.date}</td>
+                <td className="py-3 px-4 text-gray-600 dark:text-gray-300">{order.status}</td>
+                <td className="py-3 px-4 text-gray-600 dark:text-gray-300">₹{order.total}</td>
+                <td className="py-3 px-4">
+                  <button
+                    onClick={() => handleViewOrder(order)}
+                    className="text-yellow-400 hover:text-yellow-500"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Order Details Modal */}
+      {isModalOpen && selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full"
+          >
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+              Order Details
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">
+              <strong>Order ID:</strong> {selectedOrder.id}
+            </p>
+            <p className="text-gray-600 dark:text-gray-300">
+              <strong>Customer:</strong> {selectedOrder.customerName}
+            </p>
+            <p className="text-gray-600 dark:text-gray-300">
+              <strong>Date:</strong> {selectedOrder.date}
+            </p>
+            <p className="text-gray-600 dark:text-gray-300">
+              <strong>Total:</strong> ₹{selectedOrder.total}
+            </p>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              <strong>Status:</strong> {selectedOrder.status}
+            </p>
+
+            {/* Update Status Dropdown */}
+            <div className="mb-4">
+              <label className="block text-gray-800 dark:text-white mb-2">
+                Update Status:
+              </label>
+              <select
+                value={selectedOrder.status}
+                onChange={(e) =>
+                  handleUpdateStatus(selectedOrder.id, e.target.value as Order["status"])
+                }
+                className="w-full p-2 border rounded-lg focus:outline-none dark:bg-gray-700 dark:text-white"
+              >
+                <option value="Pending">Pending</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleCloseModal}
+                className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
+              >
+                Close
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </motion.div>
   );
 };
 
 export default Dashboard;
 
 
-
 import { FaEnvelope, FaCog } from "react-icons/fa";
-import { motion } from "framer-motion";
 
 export const AdminFooter = () => {
   return (

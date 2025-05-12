@@ -70,7 +70,7 @@ export const AllProductsU = () => {
   };
 
   // ✅ Place Order Function
-  const placeOrder = async (product: Product) => {
+  const placeOrder = async ( ) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -78,18 +78,6 @@ export const AllProductsU = () => {
         return;
       }
 
-      const response = await axios.post(
-        `${backendurl}/user/place`,
-        {
-          items: [{ name: product.name, productId: product.id, price: product.price, quantity: 1 }],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
 
       alert("Order placed successfully!");
     } catch (error) {
@@ -152,7 +140,7 @@ export const AllProductsU = () => {
                   <FaShoppingCart className="mr-2" /> Add to Cart
                 </button>
 
-                <button onClick={() => placeOrder(product)} className="items-center flex button1">
+                <button onClick={() => placeOrder()} className="items-center flex button1">
                   <FaCheck className="mr-2" /> Place Order
                 </button>
               </div>

@@ -4,7 +4,6 @@ import { User } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import { AdminFooter } from "../Dashboard";
 
-
 const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 interface User {
@@ -16,7 +15,6 @@ interface User {
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
 
   // Fetch all users
   useEffect(() => {
@@ -32,8 +30,6 @@ const Users = () => {
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchUsers();
@@ -110,114 +106,113 @@ const Users = () => {
     }
   };
 
-
   return (
     <>
       <Navbar />
-    <div className="min-h-screen px-24">
-      {/* Content */}
-      <div className="p-4 md:p-6">
-        <div className="p-4 md:p-6 rounded-xl bg-white/10">
-          <h2 className="text-xl font-bold mb-4">User Management</h2>
+      <div className="min-h-screen px-24">
+        {/* Content */}
+        <div className="p-4 md:p-6">
+          <div className="p-4 md:p-6 rounded-xl bg-white/10">
+            <h2 className="text-xl font-bold mb-4">User Management</h2>
 
-          {/* Desktop Table */}
-          <div className="hidden md:block">
-            <table className="w-full border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border border-gray-300 px-4 py-2">Name</th>
-                  <th className="border border-gray-300 px-4 py-2">Role</th>
-                  <th className="border border-gray-300 px-4 py-2">Status</th>
-                  <th className="border border-gray-300 px-4 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id} className="text-center">
-                    <td className="border border-gray-300 px-4 py-2">{user.username}</td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <select
-                        value={user.role}
-                        onChange={(e) => updateUserRole(user.id, e.target.value)}
-                        className="border rounded px-2 py-1 w-full"
-                      >
-                        <option value="USER">User</option>
-                        <option value="ADMIN">Admin</option>
-                        <option value="DELIVERY_PERSON">Delivery</option>
-                      </select>
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {user.isBlocked ? "Blocked" : "Not-Blocked"}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2 space-x-2">
-                      <button
-                        onClick={() => toggleBlockUser(user.id)}
-                        className={`px-3 py-1 text-white rounded ${
-                          user.isBlocked ? "bg-green-500" : "bg-red-500"
-                        }`}
-                      >
-                        {user.isBlocked ? "Unblock" : "Block"}
-                      </button>
-                      <button
-                        onClick={() => deleteUser(user.id)}
-                        className="px-3 py-1 bg-gray-700 text-white rounded"
-                      >
-                        Delete
-                      </button>
-                    </td>
+            {/* Desktop Table */}
+            <div className="hidden md:block">
+              <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border border-gray-300 px-4 py-2">Name</th>
+                    <th className="border border-gray-300 px-4 py-2">Role</th>
+                    <th className="border border-gray-300 px-4 py-2">Status</th>
+                    <th className="border border-gray-300 px-4 py-2">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.id} className="text-center">
+                      <td className="border border-gray-300 px-4 py-2">{user.username}</td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <select
+                          value={user.role}
+                          onChange={(e) => updateUserRole(user.id, e.target.value)}
+                          className="border rounded px-2 py-1 w-full"
+                        >
+                          <option value="USER">User</option>
+                          <option value="ADMIN">Admin</option>
+                          <option value="DELIVERY_PERSON">Delivery</option>
+                        </select>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {user.isBlocked ? "Blocked" : "Not-Blocked"}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 space-x-2">
+                        <button
+                          onClick={() => toggleBlockUser(user.id)}
+                          className={`px-3 py-1 text-white rounded ${
+                            user.isBlocked ? "bg-green-500" : "bg-red-500"
+                          }`}
+                        >
+                          {user.isBlocked ? "Unblock" : "Block"}
+                        </button>
+                        <button
+                          onClick={() => deleteUser(user.id)}
+                          className="px-3 py-1 bg-gray-700 text-white rounded"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          {/* Mobile Card Layout */}
-          <div className="md:hidden space-y-4">
-            {users.map((user) => (
-              <div key={user.id} className="border border-gray-300 rounded-lg p-4 shadow">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold">Name:</span>
-                  <span>{user.username}</span>
+            {/* Mobile Card Layout */}
+            <div className="md:hidden space-y-4">
+              {users.map((user) => (
+                <div key={user.id} className="border border-gray-300 rounded-lg p-4 shadow">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">Name:</span>
+                    <span>{user.username}</span>
+                  </div>
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="font-semibold">Role:</span>
+                    <select
+                      value={user.role}
+                      onChange={(e) => updateUserRole(user.id, e.target.value)}
+                      className="border rounded px-2 py-1"
+                    >
+                      <option value="USER">User</option>
+                      <option value="ADMIN">Admin</option>
+                      <option value="DELIVERY_PERSON">Delivery</option>
+                    </select>
+                  </div>
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="font-semibold">Status:</span>
+                    <span>{user.isBlocked ? "Blocked" : "Not-Blocked"}</span>
+                  </div>
+                  <div className="flex justify-end space-x-2 mt-4">
+                    <button
+                      onClick={() => toggleBlockUser(user.id)}
+                      className={`px-3 py-1 text-white rounded ${
+                        user.isBlocked ? "bg-green-500" : "bg-red-500"
+                      }`}
+                    >
+                      {user.isBlocked ? "Unblock" : "Block"}
+                    </button>
+                    <button
+                      onClick={() => deleteUser(user.id)}
+                      className="px-3 py-1 bg-gray-700 text-white rounded"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center mt-2">
-                  <span className="font-semibold">Role:</span>
-                  <select
-                    value={user.role}
-                    onChange={(e) => updateUserRole(user.id, e.target.value)}
-                    className="border rounded px-2 py-1"
-                  >
-                    <option value="USER">User</option>
-                    <option value="ADMIN">Admin</option>
-                    <option value="DELIVERY_PERSON">Delivery</option>
-                  </select>
-                </div>
-                <div className="flex justify-between items-center mt-2">
-                  <span className="font-semibold">Status:</span>
-                  <span>{user.isBlocked ? "Blocked" : "Not-Blocked"}</span>
-                </div>
-                <div className="flex justify-end space-x-2 mt-4">
-                  <button
-                    onClick={() => toggleBlockUser(user.id)}
-                    className={`px-3 py-1 text-white rounded ${
-                      user.isBlocked ? "bg-green-500" : "bg-red-500"
-                    }`}
-                  >
-                    {user.isBlocked ? "Unblock" : "Block"}
-                  </button>
-                  <button
-                    onClick={() => deleteUser(user.id)}
-                    className="px-3 py-1 bg-gray-700 text-white rounded"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <AdminFooter/>
+      <AdminFooter />
     </>
   );
 };

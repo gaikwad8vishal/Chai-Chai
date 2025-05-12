@@ -1,26 +1,28 @@
 import { useState } from "react";
 import axios from "axios";
-import { Eye, EyeOff, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-
 const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
-
-
 
 interface SignUpProps {
   closeModal?: () => void;
 }
 
-
 export function SignUp({ closeModal }: SignUpProps) {
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState<{
+    username: string;
+    password: string;
+    terms: boolean;
+  }>({
+    username: "",
+    password: "",
+    terms: false,
+  });
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-
-
 
   const handleClose = () => {
     navigate("/"); // Redirect to home page
@@ -56,7 +58,7 @@ export function SignUp({ closeModal }: SignUpProps) {
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative animate-fade-in">
         {/* Close Button */}
         <button
-          onClick={handleClose} // This closes the modal when clicked
+          onClick={handleClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-red-500 transition"
         >
           <X size={24} />
@@ -127,9 +129,9 @@ export function SignUp({ closeModal }: SignUpProps) {
             {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
- 
+
         <p className="text-center text-sm mt-5">
-          Already have an account?{" "} 
+          Already have an account?{" "}
           <a href="/signin" className="text-green-600 font-medium hover:underline">
             Sign In
           </a>

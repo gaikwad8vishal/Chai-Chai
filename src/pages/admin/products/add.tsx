@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { c } from "vite/dist/node/moduleRunnerTransport.d-CXw_Ws6P";
 
 // Inside your component
 
