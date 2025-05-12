@@ -3,6 +3,11 @@ import axios from "axios";
 import { Eye, EyeOff, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
+
+
 interface SignUpProps {
   closeModal?: () => void;
 }
@@ -32,7 +37,7 @@ export function SignUp({ closeModal }: SignUpProps) {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:3000/user/signup", formData);
+      await axios.post(`${backendurl}/user/signup`, formData);
       setSuccess("Signup successful! You can now sign in.");
 
       // Close modal after showing success message

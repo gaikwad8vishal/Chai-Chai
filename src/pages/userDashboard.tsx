@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {motion} from "framer-motion"
 import axios from "axios";
+
+
+
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 export interface Order {
   id: string;
@@ -45,10 +49,10 @@ const UserDashboard = () => {
       try {
         setLoading(true);
         const [userRes, ordersRes] = await Promise.all([
-          axios.get("http://localhost:3000/user/profile", {
+          axios.get(`${backendurl}/user/profile`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:3000/user/user-order", {
+          axios.get(`${backendurl}/user/user-order`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);

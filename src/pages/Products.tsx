@@ -3,6 +3,12 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { FaShoppingCart, FaCheck } from "react-icons/fa"; // Import icons
 
+
+
+
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
+
 interface Product {
   id: string;
   name: string;
@@ -22,7 +28,7 @@ export const AllProductsU = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/admin/all-products", {
+      const response = await axios.get(`${backendurl}/admin/all-products`, {
         withCredentials: true,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -49,7 +55,7 @@ export const AllProductsU = () => {
         return;
       }
       await axios.post(
-        "http://localhost:3000/user/add-to-cart",
+        `${backendurl}/user/add-to-cart`,
         { productId: product.id, quantity: 1 },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -73,7 +79,7 @@ export const AllProductsU = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:3000/user/place",
+        `${backendurl}/user/place`,
         {
           items: [{ name: product.name, productId: product.id, price: product.price, quantity: 1 }],
         },

@@ -3,6 +3,10 @@ import axios from "axios";
 import { User } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import { AdminFooter } from "../Dashboard";
+
+
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 interface User {
   id: string;
   username: string;
@@ -19,7 +23,7 @@ const Users = () => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:3000/admin/users", {
+        const response = await axios.get(`${backendurl}/admin/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -45,7 +49,7 @@ const Users = () => {
 
     try {
       await axios.patch(
-        `http://localhost:3000/admin/user/block-unblock/${userId}`,
+        `${backendurl}/admin/user/block-unblock/${userId}`,
         {},
         { withCredentials: true }
       );
@@ -66,7 +70,7 @@ const Users = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:3000/admin/user/delete/${userId}`, {
+      await axios.delete(`${backendurl}/admin/user/delete/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -86,7 +90,7 @@ const Users = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:3000/admin/update-role/${userId}`,
+        `${backendurl}/admin/update-role/${userId}`,
         { role: newRole },
         {
           headers: {

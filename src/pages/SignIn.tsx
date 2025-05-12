@@ -4,6 +4,9 @@ import { Eye, EyeOff, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 export function SignIn() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
@@ -26,7 +29,7 @@ export function SignIn() {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("http://localhost:3000/user/signin", formData);
+      const { data } = await axios.post(`${backendurl}/user/signin`, formData);
 
       // Store token & role in localStorage
       localStorage.setItem("token", data.token);

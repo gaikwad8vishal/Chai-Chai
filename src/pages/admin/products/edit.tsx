@@ -1,8 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 
-// 🏷️ Define Props Type
-// 🏷️ Define Product Type
+
+
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
+
 interface Product {
     id: string;
     name: string;
@@ -40,7 +43,7 @@ interface UpdateProductProps {
   
       try {
         await axios.put(
-          `http://localhost:3000/admin/update-product/${product.id}`,
+          `${backendurl}/admin/update-product/${product.id}`,
           formData,
           {
             withCredentials: true,

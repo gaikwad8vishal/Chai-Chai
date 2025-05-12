@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-// Updated OrderType to match the API response
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 export type OrderType = {
   id: string;
   orderId: string;
@@ -17,7 +18,7 @@ const AdminOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch("http://localhost:3000/admin/all-orders");
+        const res = await fetch(`${backendurl}/admin/all-orders`);
         const data = await res.json();
         // Ensure data is an array and matches OrderType
         setOrders(Array.isArray(data) ? data : [data]);
@@ -32,7 +33,7 @@ const AdminOrders = () => {
   // 📌 Order Status Update Karne Ka Function
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      const response = await fetch(`/api/orders/${orderId}`, {
+      const response = await fetch(`${backendurl}/api/orders/${orderId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -53,7 +54,7 @@ const AdminOrders = () => {
   // 📌 Order Cancel Karne Ka Function
   const cancelOrder = async (orderId: string) => {
     try {
-      const response = await fetch(`/api/orders/${orderId}`, {
+      const response = await fetch(`${backendurl}/api/orders/${orderId}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });

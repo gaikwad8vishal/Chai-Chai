@@ -2,6 +2,9 @@ import { Navigate, useLocation } from "react-router-dom";
 import { JSX, useEffect, useState } from "react";
 import axios from "axios";
 
+
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 interface User {
   id: string;
   username: string;
@@ -25,7 +28,7 @@ const ProtectedDeliveryRoute: React.FC<ProtectedDeliveryRouteProps> = ({ childre
         return;
       }
 
-      const response = await axios.get<{ user: User }>("http://localhost:3000/user/verify", {
+      const response = await axios.get<{ user: User }>(`${backendurl}/user/verify`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

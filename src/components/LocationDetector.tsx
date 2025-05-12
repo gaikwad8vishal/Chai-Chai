@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
+
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
+
+
 const UserLocation = () => {
   const [location, setLocation] = useState<string | null>(null);
 
@@ -15,7 +20,7 @@ const UserLocation = () => {
         const { latitude, longitude } = position.coords;
 
         try {
-          const response = await axios.post("http://localhost:3000/save-location", {
+          const response = await axios.post(`${backendurl}/save-location`, {
             latitude,
             longitude,
           });

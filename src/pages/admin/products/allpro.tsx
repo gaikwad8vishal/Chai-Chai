@@ -4,6 +4,7 @@ import Sidebar from "../../../components/Sidebar";
 import { useState } from "react";
 import { UpdateProduct } from "./edit";
 
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 interface Product {
   id: string;
@@ -27,7 +28,7 @@ export const AdminAllProducts = () => {
     
     const AdminfetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/admin/all-products", {
+        const response = await axios.get(`"${backendurl}/admin/all-products"`, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
@@ -50,7 +51,7 @@ export const AdminAllProducts = () => {
       if (!confirmDelete) return;
 
       try {
-        await axios.delete(`http://localhost:3000/admin/delete-product/${productId}`, {
+        await axios.delete(`${backendurl}/admin/delete-product/${productId}`, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });

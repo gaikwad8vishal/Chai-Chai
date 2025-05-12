@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { c } from "vite/dist/node/moduleRunnerTransport.d-CXw_Ws6P";
 
 // Inside your component
+
+const backendurl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 
 export const AddProduct = () => {
   const [formData, setFormData] = useState({
@@ -27,7 +31,7 @@ export const AddProduct = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/admin/add-product", {
+      const response = await fetch(`${backendurl}/admin/add-product`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
