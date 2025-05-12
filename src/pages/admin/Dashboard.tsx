@@ -321,13 +321,14 @@ export const AdminFooter = () => {
                 </a>
               </li>
               <li>
+                
                 <a href="/admin/settings" className="hover:text-yellow-400 transition">
                   Settings
                 </a>
               </li>
             </ul>
           </div>
-          
+
 
           {/* Support Contact */}
           <div>
