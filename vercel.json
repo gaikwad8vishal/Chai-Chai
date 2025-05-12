@@ -1,0 +1,9 @@
+{
+
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "build": {
+    "command": "vite build --logLevel warn"
+  }
+}
