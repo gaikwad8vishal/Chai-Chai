@@ -69,7 +69,7 @@ export const AllProductsU = () => {
     }
   };
 
-  // ✅ Place Order Function
+  // Place Order Function
   const placeOrder = async ( ) => {
     try {
       const token = localStorage.getItem("token");
