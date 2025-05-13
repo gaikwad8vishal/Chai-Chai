@@ -12,11 +12,11 @@ export default function LandingPage() {
       <div className="blob blob2"></div>
       <div className="blob blob3"></div>
 
-      {/* ✅ SignIn & SignUp Modal Rendering */}
+      {/* SignIn & SignUp Modal Rendering */}
       {openModal === "signin" && <SignIn  />}
       {openModal === "signup" && <SignUp closeModal={() => setOpenModal(null)} />}
 
-      {/* 🔥 Buttons to Open Modals */}
+      {/* Buttons to Open Modals */}
       <div className="fixed bottom-10 right-10 flex gap-4">
         <button onClick={() => setOpenModal("signin")} className="px-4 py-2 bg-green-600 text-white rounded-lg">
           Open Sign In

@@ -50,7 +50,7 @@ export const AddProduct = () => {
         setMessage("Product added successfully!");
         setFormData({ name: "", description: "", price: "", stock: "", imageUrl: "" });
 
-        // ✅ Redirect after short delay (optional)
+        // Redirect after short delay (optional)
         setTimeout(() => {
           navigate("/admin/products/all");
         }, 500); // 1 sec delay just to show the success msg

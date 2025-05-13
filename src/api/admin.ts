@@ -22,43 +22,43 @@ api.interceptors.request.use((config) => {
 
 // API Functions
 
-// ✅ Get Order Stats
+// Get Order Stats
 export const getOrderStats = async () => {
   const response = await api.get("/order-stats");
   return response.data;
 };
 
-// ✅ Block/Unblock User
+// Block/Unblock User
 export const toggleUserBlock = async (userId:string) => {
   const response = await api.patch(`/users/block-unblock/${userId}`, {});
   return response.data;
 };
 
-// ✅ Update Order Status
+// Update Order Status
 export const updateOrderStatus = async (orderId:string, status:string) => {
   const response = await api.put("/update-status", { orderId, status });
   return response.data;
 };
 
-// ✅ Get All Users
+// Get All Users
 export const getAllUsers = async () => {
   const response = await api.get("/users");
   return response.data;
 };
 
-// ✅ Get All Orders
+// Get All Orders
 export const getAllOrders = async () => {
   const response = await api.get("/all-orders");
   return response.data.orders; // Assuming backend returns { orders: [...] }
 };
 
-// ✅ Get Customer Orders
+// Get Customer Orders
 export const getCustomerOrders = async (userId:string) => {
   const response = await api.get(`/orders/${userId}`);
   return response.data; // Assuming backend returns { userId, orders: [...] }
 };
 
-// ✅ Delete User
+// Delete User
 export const deleteUser = async (userId:string) => {
   const response = await api.delete(`/users/${userId}`);
   return response.data;

@@ -24,11 +24,11 @@ const UserDashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<{ username: string } | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true); // ✅ Default to `true`
+  const [loading, setLoading] = useState(true); // Default to `true`
   const [greeting, setGreeting] = useState<string>("");
 
   useEffect(() => {
-    // ✅ Set Dynamic Greeting
+    // Set Dynamic Greeting
     const getGreeting = () => {
       const hour = new Date().getHours();
       if (hour >= 5 && hour < 12) return "Good Morning";
@@ -38,7 +38,7 @@ const UserDashboard = () => {
     };
     setGreeting(getGreeting());
 
-    // ✅ Fetch Data (User & Orders)
+    // Fetch Data (User & Orders)
     const fetchData = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
